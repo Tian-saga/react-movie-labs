@@ -58,6 +58,24 @@ const MovieDetails = ({ movie }) => {  // Don't miss this!
         />
         <Chip label={`Released: ${movie.release_date}`} />
       </Paper>
+
+{/* 显示制作国家 */}
+<Paper component="ul" sx={{ ...root }}>
+  <li>
+    <Chip label="Production Countries" sx={{ ...chip }} color="primary" />
+  </li>
+  {movie.production_countries && movie.production_countries.length > 0 ? (
+    movie.production_countries.map((country, index) => (
+      <li key={index}>
+        <Chip label={country.name} sx={{ ...chip }} />
+      </li>
+    ))
+  ) : (
+    <p>No production countries available</p>
+  )}
+</Paper>
+
+
       <Fab
         color="secondary"
         variant="extended"
