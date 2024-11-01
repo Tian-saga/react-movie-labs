@@ -1,14 +1,19 @@
-import React from "react";
+import React, { useContext } from "react";
 import { getUpcomingMovies } from "../api/tmdb-api";  // 引入getUpcomingMovies
 import PageTemplate from '../components/templateMovieListPage';
 import { useQuery } from 'react-query';
 import Spinner from '../components/spinner';
 import AddToFavoritesIcon from '../components/cardIcons/addToFavorites';
 import AddToWatchlistIcon from '../components/cardIcons/addToWatchlistIcon';
+import { MoviesContext } from "../contexts/moviesContext";  // 导入 MoviesContext
+import PlaylistAddIcon from "@mui/icons-material/PlaylistAdd";
 
 const UpcomingMoviesPage = () => {
-  // 使用getUpcomingMovies通过useQuery获取即将上映的电影数据
+  // 使用 getUpcomingMovies 通过 useQuery 获取即将上映的电影数据
   const { data, error, isLoading, isError } = useQuery('upcoming', getUpcomingMovies);
+  
+  // 从 MoviesContext 中获取 addToMustWatch 函数
+  const { addToMustWatch } = useContext(MoviesContext);
 
   if (isLoading) {
     return <Spinner />;  // 显示加载动画
@@ -28,12 +33,21 @@ const UpcomingMoviesPage = () => {
   return (
     <PageTemplate
       title="Upcoming Movies"  // 设置页面标题
-      movies={movies}  // 将获取的电影数据传递给PageTemplate组件
+      movies={movies}  // 将获取的电影数据传递给 PageTemplate 组件
       action={(movie) => {
-        return <AddToWatchlistIcon movie={movie} />;   // 显示 `AddToWatchlistIcon`
+        // 将 `addToMustWatch` 与一个图标绑定，点击时执行 `addToMustWatch`
+        return (
+          <>
+            <AddToFavoritesIcon movie={movie} />
+            <button onClick={() => addToMustWatch(movie.id)}>
+              <PlaylistAddIcon /> Add to Must Watch
+            </button>
+          </>
+        );
       }}
     />
   );
 };
 
 export default UpcomingMoviesPage;
+
