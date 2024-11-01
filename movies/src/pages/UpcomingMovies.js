@@ -4,6 +4,7 @@ import PageTemplate from '../components/templateMovieListPage';
 import { useQuery } from 'react-query';
 import Spinner from '../components/spinner';
 import AddToFavoritesIcon from '../components/cardIcons/addToFavorites';
+import AddToWatchlistIcon from '../components/cardIcons/addToWatchlistIcon';
 
 const UpcomingMoviesPage = () => {
   // 使用getUpcomingMovies通过useQuery获取即将上映的电影数据
@@ -29,7 +30,7 @@ const UpcomingMoviesPage = () => {
       title="Upcoming Movies"  // 设置页面标题
       movies={movies}  // 将获取的电影数据传递给PageTemplate组件
       action={(movie) => {
-        return <AddToFavoritesIcon movie={movie} />;  // 每部电影的收藏按钮
+        return <AddToWatchlistIcon movie={movie} />;   // 显示 `AddToWatchlistIcon`
       }}
     />
   );
