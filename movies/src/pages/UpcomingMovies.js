@@ -8,6 +8,8 @@ import AddToWatchlistIcon from '../components/cardIcons/addToWatchlistIcon';
 import { MoviesContext } from "../contexts/moviesContext";  // 导入 MoviesContext
 import PlaylistAddIcon from "@mui/icons-material/PlaylistAdd";
 
+
+
 const UpcomingMoviesPage = () => {
   // 使用 getUpcomingMovies 通过 useQuery 获取即将上映的电影数据
   const { data, error, isLoading, isError } = useQuery('upcoming', getUpcomingMovies);
@@ -36,14 +38,7 @@ const UpcomingMoviesPage = () => {
       movies={movies}  // 将获取的电影数据传递给 PageTemplate 组件
       action={(movie) => {
         // 将 `addToMustWatch` 与一个图标绑定，点击时执行 `addToMustWatch`
-        return (
-          <>
-            <AddToFavoritesIcon movie={movie} />
-            <button onClick={() => addToMustWatch(movie.id)}>
-              <PlaylistAddIcon /> Add to Must Watch
-            </button>
-          </>
-        );
+        return <PlaylistAddIcon color="primary" fontSize="large" />;
       }}
     />
   );
