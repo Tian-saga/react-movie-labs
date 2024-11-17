@@ -1,4 +1,4 @@
-import React, {useState, useEffect}  from "react";
+import React from "react";
 import Card from "@mui/material/Card";
 import CardMedia from "@mui/material/CardMedia";
 import CardContent from "@mui/material/CardContent";
@@ -9,20 +9,19 @@ import TextField from "@mui/material/TextField";
 import SearchIcon from "@mui/icons-material/Search";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
-import img from '../../images/pexels-dziana-hasanbekava-5480827.jpg'
+import Button from "@mui/material/Button"; // 新增Button组件
+import img from '../../images/pexels-dziana-hasanbekava-5480827.jpg';
 import { getGenres } from "../../api/tmdb-api";
 import { useQuery } from "react-query";
-import Spinner from '../spinner'
+import Spinner from '../spinner';
 
-const formControl = 
-  {
-    margin: 1,
-    minWidth: "90%",
-    backgroundColor: "rgb(255, 255, 255)"
-  };
+const formControl = {
+  margin: 1,
+  minWidth: "90%",
+  backgroundColor: "rgb(255, 255, 255)"
+};
 
 export default function FilterMoviesCard(props) {
-
   const { data, error, isLoading, isError } = useQuery("genres", getGenres);
 
   if (isLoading) {
@@ -32,52 +31,71 @@ export default function FilterMoviesCard(props) {
   if (isError) {
     return <h1>{error.message}</h1>;
   }
+
   const genres = data.genres;
-  if (genres[0].name !== "All"){
+  if (genres[0].name !== "All") {
     genres.unshift({ id: "0", name: "All" });
   }
 
   const handleChange = (e, type, value) => {
     e.preventDefault();
-    props.onUserInput(type, value); // NEW
+    props.onUserInput(type, value);
   };
 
-  const handleTextChange = (e, props) => {
+  const handleTextChange = (e) => {
     handleChange(e, "name", e.target.value);
   };
 
   const handleGenreChange = (e) => {
-    handleChange(e, "genre", e.target.value);
+    handleChange(e, "genre", Array.isArray(e.target.value) ? e.target.value : []);
   };
+
+  const handleSortChange = (e) => {
+    handleChange(e, "sortBy", e.target.value);
+  };
+
+  const handleResetFilters = () => {
+    props.onUserInput("name", "");
+    props.onUserInput("genre", []);
+    props.onUserInput("sortBy", "");
+  };
+
   return (
-    <Card 
+    <Card
       sx={{
         backgroundColor: "rgb(204, 204, 0)"
-      }} 
-      variant="outlined">
+      }}
+      variant="outlined"
+    >
       <CardContent>
         <Typography variant="h5" component="h1">
           <SearchIcon fontSize="large" />
           Filter the movies.
         </Typography>
         <TextField
-      sx={{...formControl}}
-      id="filled-search"
-      label="Search field"
-      type="search"
-      variant="filled"
-      value={props.titleFilter}
-      onChange={handleTextChange}
-    />
-        <FormControl sx={{...formControl}}>
+          sx={{ ...formControl }}
+          id="filled-search"
+          label="Search field"
+          type="search"
+          variant="filled"
+          value={props.titleFilter}
+          onChange={handleTextChange}
+        />
+        <FormControl sx={{ ...formControl }}>
           <InputLabel id="genre-label">Genre</InputLabel>
           <Select
-    labelId="genre-label"
-    id="genre-select"
-    defaultValue=""
-    value={props.genreFilter}
-    onChange={handleGenreChange}
-            >
+            labelId="genre-label"
+            id="genre-select"
+            multiple
+            value={Array.isArray(props.genreFilter) ? props.genreFilter : []} // 确保值是数组
+            onChange={handleGenreChange}
+            renderValue={(selected) =>
+              genres
+                .filter((genre) => selected.includes(genre.id))
+                .map((genre) => genre.name)
+                .join(", ")
+            }
+          >
             {genres.map((genre) => {
               return (
                 <MenuItem key={genre.id} value={genre.id}>
@@ -87,19 +105,32 @@ export default function FilterMoviesCard(props) {
             })}
           </Select>
         </FormControl>
+        <FormControl sx={{ ...formControl }}>
+          <InputLabel id="sort-label">Sort By</InputLabel>
+          <Select
+            labelId="sort-label"
+            id="sort-select"
+            value={props.sortBy}
+            onChange={handleSortChange}
+          >
+            <MenuItem value="rating">Rating</MenuItem>
+            <MenuItem value="releaseDate">Release Date</MenuItem>
+          </Select>
+        </FormControl>
+        <Button
+          variant="contained"
+          color="secondary"
+          onClick={handleResetFilters}
+          sx={{ marginTop: 2 }}
+        >
+          Clear Filters
+        </Button>
       </CardContent>
       <CardMedia
         sx={{ height: 300 }}
         image={img}
         title="Filter"
       />
-      <CardContent>
-        <Typography variant="h5" component="h1">
-          <SearchIcon fontSize="large" />
-          Filter the movies.
-          <br />
-        </Typography>
-      </CardContent>
     </Card>
   );
 }
