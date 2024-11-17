@@ -36,10 +36,15 @@ const UpcomingMoviesPage = () => {
     <PageTemplate
       title="Upcoming Movies"  // 设置页面标题
       movies={movies}  // 将获取的电影数据传递给 PageTemplate 组件
-      action={(movie) => {
-        // 将 `addToMustWatch` 与一个图标绑定，点击时执行 `addToMustWatch`
-        return <PlaylistAddIcon color="primary" fontSize="large" />;
-      }}
+      action={(movie) => (
+        <PlaylistAddIcon
+          color="primary"
+          fontSize="large"
+          onClick={() => addToMustWatch(movie.id)} // 传递 movie.id
+          style={{ cursor: "pointer" }}
+        />
+      )}
+      
     />
   );
 };
