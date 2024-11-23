@@ -88,6 +88,4 @@ Contributions are welcome! If you have good ideas or find any issues, please fol
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
 ## Demo Video
-Watch the demonstration of the key features of this project: [Demo Video](https://your-video-link.com)  
-*The video includes a voiceover explaining the main features and how to use the application.*
-
+Watch the demonstration of the key features of this project: [Demo Video](https://youtu.be/8b7_aADn8Kw)
