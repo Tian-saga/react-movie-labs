@@ -9,7 +9,7 @@ import TextField from "@mui/material/TextField";
 import SearchIcon from "@mui/icons-material/Search";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
-import Button from "@mui/material/Button"; // 新增Button组件
+import Button from "@mui/material/Button"; // New Button component
 import img from '../../images/pexels-dziana-hasanbekava-5480827.jpg';
 import { getGenres } from "../../api/tmdb-api";
 import { useQuery } from "react-query";
@@ -54,10 +54,35 @@ export default function FilterMoviesCard(props) {
     handleChange(e, "sortBy", e.target.value);
   };
 
+  const handleYearFromChange = (e) => {
+    handleChange(e, "yearFrom", e.target.value);
+  };
+
+  const handleYearToChange = (e) => {
+    handleChange(e, "yearTo", e.target.value);
+  };
+
+  const handleRatingFromChange = (e) => {
+    handleChange(e, "ratingFrom", e.target.value);
+  };
+
+  const handleRatingToChange = (e) => {
+    handleChange(e, "ratingTo", e.target.value);
+  };
+
+  const handleLanguageChange = (e) => {
+    handleChange(e, "language", e.target.value);
+  };
+
   const handleResetFilters = () => {
     props.onUserInput("name", "");
     props.onUserInput("genre", []);
     props.onUserInput("sortBy", "");
+    props.onUserInput("yearFrom", "");
+    props.onUserInput("yearTo", "");
+    props.onUserInput("ratingFrom", "");
+    props.onUserInput("ratingTo", "");
+    props.onUserInput("language", "");
   };
 
   return (
@@ -87,7 +112,7 @@ export default function FilterMoviesCard(props) {
             labelId="genre-label"
             id="genre-select"
             multiple
-            value={Array.isArray(props.genreFilter) ? props.genreFilter : []} // 确保值是数组
+            value={Array.isArray(props.genreFilter) ? props.genreFilter : []} // Ensure value is an array
             onChange={handleGenreChange}
             renderValue={(selected) =>
               genres
@@ -117,6 +142,56 @@ export default function FilterMoviesCard(props) {
             <MenuItem value="releaseDate">Release Date</MenuItem>
           </Select>
         </FormControl>
+        <TextField
+          sx={{ ...formControl }}
+          id="year-from"
+          label="Year From"
+          type="number"
+          variant="filled"
+          value={props.yearFrom}
+          onChange={handleYearFromChange}
+        />
+        <TextField
+          sx={{ ...formControl }}
+          id="year-to"
+          label="Year To"
+          type="number"
+          variant="filled"
+          value={props.yearTo}
+          onChange={handleYearToChange}
+        />
+        <TextField
+          sx={{ ...formControl }}
+          id="rating-from"
+          label="Rating From"
+          type="number"
+          variant="filled"
+          value={props.ratingFrom}
+          onChange={handleRatingFromChange}
+        />
+        <TextField
+          sx={{ ...formControl }}
+          id="rating-to"
+          label="Rating To"
+          type="number"
+          variant="filled"
+          value={props.ratingTo}
+          onChange={handleRatingToChange}
+        />
+        <FormControl sx={{ ...formControl }}>
+          <InputLabel id="language-label">Language</InputLabel>
+          <Select
+            labelId="language-label"
+            id="language-select"
+            value={props.language}
+            onChange={handleLanguageChange}
+          >
+            <MenuItem value="en">English</MenuItem>
+            <MenuItem value="es">Spanish</MenuItem>
+            <MenuItem value="fr">French</MenuItem>
+            {/* Add more languages as needed */}
+          </Select>
+        </FormControl>
         <Button
           variant="contained"
           color="secondary"
@@ -134,3 +209,4 @@ export default function FilterMoviesCard(props) {
     </Card>
   );
 }
+

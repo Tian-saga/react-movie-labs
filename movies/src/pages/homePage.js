@@ -7,9 +7,9 @@ import AddToFavoritesIcon from '../components/cardIcons/addToFavorites';
 import FilterMoviesCard from '../components/filterMoviesCard';
 
 const HomePage = (props) => {
-  const [filters, setFilters] = useState({ genre: [], name: "", sortBy: "" });
+  const [filters, setFilters] = useState({ genre: [], name: "", sortBy: "", yearFrom: "", yearTo: "", ratingFrom: "", ratingTo: "", language: "" });
   const [currentPage, setCurrentPage] = useState(1);
-  const moviesPerPage = 10; // 每页显示10部电影
+  const moviesPerPage = 10; // Number of movies per page
 
   const { data, error, isLoading, isError } = useQuery('discover', getMovies);
 
@@ -22,11 +22,17 @@ const HomePage = (props) => {
   }
   const movies = data.results;
 
-  // Filtering movies based on genre and name
+  // Filtering movies based on genre, name, year, rating, and language
   const filteredMovies = movies.filter((movie) => {
     const meetsGenre = filters.genre.length === 0 || filters.genre.some((genre) => movie.genre_ids.includes(parseInt(genre)));
     const meetsSearch = movie.title.toLowerCase().includes(filters.name.toLowerCase());
-    return meetsGenre && meetsSearch;
+    const meetsYearFrom = !filters.yearFrom || new Date(movie.release_date).getFullYear() >= parseInt(filters.yearFrom);
+    const meetsYearTo = !filters.yearTo || new Date(movie.release_date).getFullYear() <= parseInt(filters.yearTo);
+    const meetsRatingFrom = !filters.ratingFrom || movie.vote_average >= parseFloat(filters.ratingFrom);
+    const meetsRatingTo = !filters.ratingTo || movie.vote_average <= parseFloat(filters.ratingTo);
+    const meetsLanguage = !filters.language || movie.original_language === filters.language;
+
+    return meetsGenre && meetsSearch && meetsYearFrom && meetsYearTo && meetsRatingFrom && meetsRatingTo && meetsLanguage;
   });
 
   // Sorting movies based on selected sort criteria
@@ -49,6 +55,7 @@ const HomePage = (props) => {
       ...filters,
       [type]: type === "genre" ? (Array.isArray(value) ? value : [value]) : value, // Ensure genre is always an array
     });
+    setCurrentPage(1); // Reset to the first page when filters change
   };
 
   const paginate = (pageNumber) => {
@@ -60,40 +67,50 @@ const HomePage = (props) => {
   localStorage.setItem('favorites', JSON.stringify(favorites));
 
   return (
-    <>
-      <FilterMoviesCard
-        onUserInput={handleFilterChange}
-        titleFilter={filters.name}
-        genreFilter={filters.genre.length > 0 ? filters.genre : []} // Ensure genreFilter is an array
-        sortBy={filters.sortBy}
-      />
-      <PageTemplate
-        title="Discover Movies"
-        movies={currentMovies}
-        action={(movie) => {
-          return <AddToFavoritesIcon movie={movie} />;
-        }}
-      />
-      {/* Pagination Controls */}
-      <div style={{ margin: "20px", textAlign: "center" }}>
-        {Array.from({ length: Math.ceil(sortedMovies.length / moviesPerPage) }, (_, index) => (
-          <button
-            key={index + 1}
-            onClick={() => paginate(index + 1)}
-            style={{
-              margin: "0 5px",
-              padding: "10px",
-              backgroundColor: currentPage === index + 1 ? "rgb(204, 204, 0)" : "white",
-              border: "1px solid #ccc",
-              cursor: "pointer"
-            }}
-          >
-            {index + 1}
-          </button>
-        ))}
+    <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-start', flexWrap: 'nowrap' }}>
+      <div style={{ flex: '0 0 250px', padding: '10px', maxHeight: '100vh', overflowY: 'auto' }}>
+        <FilterMoviesCard
+          onUserInput={handleFilterChange}
+          titleFilter={filters.name}
+          genreFilter={filters.genre.length > 0 ? filters.genre : []} // Ensure genreFilter is an array
+          sortBy={filters.sortBy}
+          yearFrom={filters.yearFrom}
+          yearTo={filters.yearTo}
+          ratingFrom={filters.ratingFrom}
+          ratingTo={filters.ratingTo}
+          language={filters.language}
+        />
       </div>
-    </>
+      <div style={{ flex: '1 1 auto', padding: '10px' }}>
+        <PageTemplate
+          title="Discover Movies"
+          movies={currentMovies}
+          action={(movie) => {
+            return <AddToFavoritesIcon movie={movie} />;
+          }}
+        />
+        {/* Pagination Controls */}
+        <div style={{ width: '100%', margin: "20px", textAlign: "center" }}>
+          {Array.from({ length: Math.ceil(sortedMovies.length / moviesPerPage) }, (_, index) => (
+            <button
+              key={index + 1}
+              onClick={() => paginate(index + 1)}
+              style={{
+                margin: "0 5px",
+                padding: "10px",
+                backgroundColor: currentPage === index + 1 ? "rgb(204, 204, 0)" : "white",
+                border: "1px solid #ccc",
+                cursor: "pointer"
+              }}
+            >
+              {index + 1}
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
   );
 };
 
 export default HomePage;
+
